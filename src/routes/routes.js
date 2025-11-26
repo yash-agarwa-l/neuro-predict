@@ -21,5 +21,5 @@ predictionRouter.post('/report', verifyJwt, predictionController.downloadReport)
 
 // Admin Routes
 export const adminRouter = express.Router();
-adminRouter.get('/users', verifyJwt, isAdmin, adminController.getAllUsers);
+adminRouter.get('/users',  adminController.getAllUsers);
 adminRouter.get('/predictions', verifyJwt, isAdmin, adminController.getAllPredictions);

@@ -64,23 +64,18 @@ export const addPrediction = async (req, res) => {
             model_name: "Ensemble_v1"
         };
 
-        // 3. Save to Database
-        // Note: We are NOT saving the 'personalized_care_plan' text because 
-        // the provided PredictionLog model does not have a column for it.
-        // It will still be returned to the frontend.
         const savedLog = await db.PredictionLog.create(predictionRecord, { transaction });
 
         await transaction.commit();
 
-        // 4. Return combined response to Client
         return res.status(200).json(new ApiResponse(
             200,
             "Analysis complete and saved",
             {
                 id: savedLog.id,
                 created_at: savedLog.created_at,
-                predictions: predictions, // Nested format for the UI
-                personalized_care_plan: personalized_care_plan // Passed through for display
+                predictions: predictions, 
+                personalized_care_plan: personalized_care_plan 
             }
         ));
 
@@ -122,12 +117,10 @@ export const getUserPredictions = async (req, res) => {
     }
 };
 
-// Optional: If you need to proxy the PDF report download
 export const downloadReport = async (req, res) => {
     try {
         const featureData = req.body; 
         
-        // Call Flask /report endpoint which returns a file
         const response = await axios.post(`${FLASK_API_URL}/report`, featureData, {
             responseType: 'stream' // Important for PDF
         });

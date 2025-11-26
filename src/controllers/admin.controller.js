@@ -1,9 +1,10 @@
+import { Transaction } from 'sequelize';
 import db from '../models/index.js';
 import { ApiResponse } from '../utils/api.response.js';
 
 /**
  * @description Get all users (for Admin)
- * @route GET /api/v1/admin/users
+ * @route GET admin/users
  * @access Admin
  */
 export const getAllUsers = async (req, res) => {
@@ -12,12 +13,22 @@ export const getAllUsers = async (req, res) => {
             attributes: {
                 exclude: ['password', 'refresh_token', 'deleted_at']
             },
-            order: [['created_at', 'DESC']]
+            include: [
+                {
+                    model: db.PredictionLog,
+                    as: 'predictionLogs', 
+                    required: false       
+                }
+            ],
+            order: [
+                ['created_at', 'DESC'], 
+                [{ model: db.PredictionLog, as: 'predictionLogs' }, 'created_at', 'DESC']
+            ]
         });
 
         return res.status(200).json(new ApiResponse(
             200,
-            "All users retrieved successfully",
+            "All users retrieved successfully with prediction history",
             users
         ));
 
@@ -30,6 +41,8 @@ export const getAllUsers = async (req, res) => {
         ));
     }
 };
+
+
 
 /**
  * @description Get all prediction logs from all users (for Admin)

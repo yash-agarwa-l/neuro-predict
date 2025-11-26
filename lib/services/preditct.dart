@@ -124,7 +124,7 @@ class ApiService {
   static Future<File> getNeuroReport(Map<String, dynamic> features) async {
     var status = await Permission.storage.request();
 
-    var url = Uri.parse('$mlServerUrl/report');
+    var url = Uri.parse('$serverUrl/predictions/report');
 
     try {
       final headers = await _getAuthenticatedHeaders();

@@ -16,6 +16,14 @@ class AuthLocalDataSource {
     await _storage.write(key: _accessTokenKey, value: accessToken);
   }
 
+  Future<void> saveRole(String role) async {
+    await _storage.write(key: 'role', value: role);
+  }
+
+  Future<String?> getRole() async {
+    return await _storage.read(key: 'role');
+  }
+
   Future<String?> getAccessToken() async {
     return await _storage.read(key: _accessTokenKey);
   }

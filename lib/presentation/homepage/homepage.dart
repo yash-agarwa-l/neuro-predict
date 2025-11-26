@@ -3,14 +3,15 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:mlapp/presentation/admin_page.dart';
 import 'package:mlapp/presentation/login_page.dart';
 import 'package:mlapp/presentation/report_page.dart';
 import 'package:mlapp/presentation/homepage/homepagewidgets.dart';
 import 'package:mlapp/services/auth.dart';
 import 'package:mlapp/services/preditct.dart';
+import 'package:mlapp/services/token.dart';
 import '../theme.dart';
 
-// MOCK DATA
 final Map<String, dynamic> _mockFeatureData = {
   "sleep_stage": 2,
   "eeg_theta_power": 45.5,
@@ -39,11 +40,22 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _isLoadingAnalysis = false;
   late Future<List<dynamic>> _historyFuture;
+  bool _isAdmin = false;
 
   @override
   void initState() {
     super.initState();
+    _checkRole();
     _loadHistory();
+  }
+
+  Future<void> _checkRole() async {
+    final role = await AuthLocalDataSource.instance.getRole();
+    if (mounted) {
+      setState(() {
+        _isAdmin = (role == 'admin');
+      });
+    }
   }
 
   void _loadHistory() {
@@ -146,6 +158,36 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: _isAdmin ? Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: kAccentColor),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                   Icon(Icons.admin_panel_settings, color: Colors.white, size: 48),
+                   SizedBox(height: 10),
+                   Text('Admin Console', style: TextStyle(color: Colors.white, fontSize: 24)),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.people),
+              title: const Text('Manage Users & Models'),
+              onTap: () {
+                Navigator.pop(context); // Close drawer
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => const AdminPage())
+                );
+              },
+            ),
+          ],
+        ),
+      ) : null,
       appBar: AppBar(
         title: const Text('NeuroPredict'),
         actions: [

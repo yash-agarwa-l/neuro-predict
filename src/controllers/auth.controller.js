@@ -25,7 +25,6 @@ export const login = async (req, res) => {
             return res.status(404).json(new ApiResponse(404, "User not found"));
         }
 
-        // Validate password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             await transaction.rollback();
@@ -48,24 +47,6 @@ export const login = async (req, res) => {
 
         res.setHeader("Authorization", accessToken);
         res.setHeader("Refresh-Token", refreshToken);
-
-        // Check if role is set, 210 indicates role selection pending
-        if (user.role === 'common') {
-        // if (!user.role) {
-            return res.status(210).json(new ApiResponse(
-                210,
-                "login successful, role selection pending",
-                {
-                    accessToken,
-                    user: {
-                        id: user.id,
-                        name: user.name,
-                        email: user.email,
-                        role: user.role
-                    }
-                }
-            ));
-        }
 
         return res.json(new ApiResponse(
             200,
@@ -133,7 +114,6 @@ export const signin = async (req, res) => {
         res.setHeader("Authorization", accessToken);
         res.setHeader("Refresh-Token", refreshToken);
 
-        // Add flag if role is 'common' to prompt selection
         const needsRoleSelection = user.role === 'user';
 
         return res.json(new ApiResponse(
@@ -147,7 +127,7 @@ export const signin = async (req, res) => {
                     email: user.email,
                     role: user.role
                 },
-                needsRoleSelection  // Frontend can check this and redirect
+                needsRoleSelection  
             }
         ));
     } catch (e) {
@@ -161,10 +141,7 @@ export const signin = async (req, res) => {
 };
 
 
-// In src/controllers/auth.controller.js
-
 export const refreshAccessToken = async (req, res) => {
-  // The refresh token can be sent in a cookie or the request body
   const incomingRefreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
   if (!incomingRefreshToken) {
@@ -172,19 +149,15 @@ export const refreshAccessToken = async (req, res) => {
   }
 
   try {
-    // Find the user in the database who owns this refresh token
     const user = await db.User.findOne({ where: { refresh_token: incomingRefreshToken } });
 
     if (!user) {
-      // If the token is not in our database, it's invalid or has been used.
       return res.status(403).json(new ApiResponse(403, "Forbidden: Invalid refresh token"));
     }
 
-    // Generate new tokens
     const newAccessToken = "Bearer " + user.generateAccessToken();
-    const newRefreshToken = await user.generateRefreshToken(); // This rotates the refresh token
+    const newRefreshToken = await user.generateRefreshToken(); 
 
-    // Send the new tokens back to the client
     res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
     res.setHeader("Authorization", newAccessToken);
     res.setHeader("Refresh-Token", newRefreshToken);

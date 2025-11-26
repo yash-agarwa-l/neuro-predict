@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
-// This function defines the User model and its methods
 export default function (sequelize) {
     const User = sequelize.define("User", {
         id: {
@@ -31,13 +30,11 @@ export default function (sequelize) {
             type: DataTypes.STRING,
             // unique: true, // As per your original
             validate: {
-                // Allows for optional + and country code
                 is: /^[+]?[0-9]{10,15}$/i
             }
         },
         role: {
             type: DataTypes.ENUM("user", "admin"),
-            // ***FIX: Changed default from "common" to "user" to match ENUM***
             defaultValue: "user" 
         },
         location: {
@@ -51,29 +48,26 @@ export default function (sequelize) {
             allowNull:true,
             unique:true
         },
-        // Timestamps are handled by sequelize options below
-        // createdAt: {
-        //     type: DataTypes.DATE,
-        //     defaultValue: DataTypes.NOW
-        // },
-        // updatedAt: {
-        //     type: DataTypes.DATE,
-        //     defaultValue: DataTypes.NOW
-        // }
+
+        created_at: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW
+        },
+        updated_at: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW
+        }
     }, {
-        timestamps: true,       // Automatically adds createdAt and updatedAt
-        paranoid: true,         // Adds deletedAt for soft deletes
-        underscored: true,      // Uses snake_case for db columns
+        timestamps: true,       
+        paranoid: true,         
+        underscored: true,      
         createdAt: 'created_at', 
         updatedAt: 'updated_at',
         deletedAt: 'deleted_at',
         indexes: [
-            { fields: ['id', 'email'] }, // Added email to index
+            { fields: ['id', 'email'] }, 
         ]
     });
-
-    // --- Hooks ---
-    // Moved hooks and methods inside the function
 
     User.beforeCreate(async (user, options) => {
         if (user.password) {
@@ -87,30 +81,24 @@ export default function (sequelize) {
         }
     });
 
-    // --- Associations ---
-    // This method will be called by db/index.js
     User.associate = (models) => {
         User.hasMany(models.PredictionLog, {
             foreignKey: 'user_id',
-            as: 'predictionLogs' // Optional: adds an alias
+            as: 'predictionLogs'
         });
     };
 
-    // --- Instance Methods ---
-
     User.prototype.generateAccessToken = function() {
-        // Note: Ensure your .env file is loaded before this runs
         const privateKey = process.env.ACCESS_SECRET?.replace(/\\n/g, '\n');
         if (!privateKey) {
             console.error("ACCESS_SECRET is not set in .env");
-            // In a real app, you might want to throw an error
             return null; 
         }
 
         return jwt.sign(
             {
                 id: this.id,
-                email: this.email, // Good to include email
+                email: this.email, 
                 role: this.role
             },
             privateKey,
@@ -124,9 +112,7 @@ export default function (sequelize) {
     User.prototype.generateRefreshToken = async function() {
         const refreshToken = crypto.randomBytes(64).toString('hex');
         this.refresh_token = refreshToken;
-        // You might want to hash the refresh token in the DB for security
-        // For now, saving it directly as per your example
-        await this.save({ validate: false }); // Skip validation to just save token
+        await this.save({ validate: false }); 
         return refreshToken;
     };
 

@@ -122,17 +122,15 @@ export default function (sequelize) {
         deletedAt: 'deleted_at',
         indexes: [
             { fields: ['id'] },
-            { fields: ['user_id'] } // Good to index the foreign key
+            { fields: ['user_id'] } 
         ],
-        tableName: 'prediction_logs' // Explicitly set table name
+        tableName: 'prediction_logs' 
     });
 
-    // --- Associations ---
-    // This method will be called by db/index.js
     PredictionLog.associate = (models) => {
         PredictionLog.belongsTo(models.User, {
             foreignKey: 'user_id',
-            as: 'user' // Optional: adds an alias
+            as: 'user' 
         });
     };
 

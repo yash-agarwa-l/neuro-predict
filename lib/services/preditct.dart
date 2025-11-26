@@ -64,9 +64,11 @@ class ApiService {
     }
   }
 
+// {statusCode: 200, data: {id: e90a73f7-49f0-45bb-afd8-c8e032a82578, created_at: 2025-11-26T16:35:45.845Z, predictions: {Alzheimer: {Risk_Score: 57.33, Risk_Stage: 2}, Parkinson: {Risk_Score: 61.33, Risk_Stage: 2}, Stress: {Risk_Score: 39.42, Risk_Stage: 2}}, personalized_care_plan: 
+
   static Future<Map<String, dynamic>> getNeuroPredictions(
       Map<String, dynamic> features) async {
-    var url = Uri.parse('$mlServerUrl/predict');
+    var url = Uri.parse('$serverUrl/predictions/add');
     try {
       final headers = await _getAuthenticatedHeaders();
       var response = await http
@@ -82,7 +84,7 @@ class ApiService {
       if (response.statusCode == 200) {
         print("Raw API Response: $responseBody");
 
-        final data = responseBody;
+        final data = responseBody["data"]["predictions"];
 
         // --- FIXED MAPPING BELOW ---
         // The server returns: {"Alzheimer": {"Risk_Score": 57.33, ...}, ...}
@@ -100,7 +102,8 @@ class ApiService {
           "Stress": {
             "Risk_Score": data['Stress']?['Risk_Score'],
             "Risk_Stage": data['Stress']?['Risk_Stage']
-          }
+          },
+          "carePlan": responseBody["data"]["personalized_care_plan"]
         };
       } else {
         final message = responseBody['message'] ?? "Failed to get predictions";

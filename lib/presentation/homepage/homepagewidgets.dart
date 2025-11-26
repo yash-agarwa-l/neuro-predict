@@ -156,7 +156,6 @@ class HistorySection extends StatelessWidget {
   }
 }
 
-/// 4. Logic to build a single history item (Parses data + Builds Card)
 class HistoryItemBuilder extends StatelessWidget {
   final Map<String, dynamic> report;
 
@@ -171,10 +170,8 @@ class HistoryItemBuilder extends StatelessWidget {
       'Stress': (report['stress_risk_score'] ?? 0.0) as num,
     };
 
-    // Find Highest Risk
     final highest = scores.entries.reduce((a, b) => a.value > b.value ? a : b);
     
-    // Formatting
     final double scoreVal = highest.value.toDouble();
     final String subtitle = "${highest.key}: ${scoreVal.toStringAsFixed(1)}% Risk";
     
@@ -208,11 +205,11 @@ class HistoryItemBuilder extends StatelessWidget {
       "Stress": {
         "Risk_Score": report['stress_risk_score'],
         "Risk_Stage": report['stress_risk_stage']
-      }
+      },
+      "carePlan": report['personalized_care_plan']
     };
 
-    // Map all 15 features manually (shortened for brevity in this snippet)
-    // In a real app, use a .fromJson model
+
     final featureDataMap = {
         "sleep_stage": report['sleep_stage'],
         "eeg_theta_power": report['eeg_theta_power'],
@@ -228,7 +225,8 @@ class HistoryItemBuilder extends StatelessWidget {
         "valence": report['valence'],
         "arousal": report['arousal'],
         "mood": report['mood'],
-        "activity": report['activity']
+        "activity": report['activity'],
+
     };
 
     Navigator.push(

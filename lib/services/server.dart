@@ -1,3 +1,3 @@
-const String serverUrl = "https://neuro.devwithyash.dev";
+const String serverUrl = "";
 
-const String mlServerUrl = "https://neuro-3r1n.onrender.com";
+const String mlServerUrl = "";

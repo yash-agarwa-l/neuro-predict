@@ -179,7 +179,7 @@ class _ReportPageState extends State<ReportPage> {
 
           const SizedBox(height: 30),
 
-          // --- Personalized Care Plan ---
+          //Personalized Care Plan
           if (carePlanText != null && carePlanText.isNotEmpty) ...[
             Row(
               children: [
@@ -193,7 +193,6 @@ class _ReportPageState extends State<ReportPage> {
             const SizedBox(height: 20),
           ],
 
-          // --- Disclaimer ---
           Card(
             color: kSurfaceColor.withOpacity(0.5),
             margin: const EdgeInsets.only(top: 10, bottom: 30),
@@ -287,7 +286,7 @@ class _CarePlanViewer extends StatelessWidget {
             String trimmed = line.trim();
             if (trimmed.isEmpty) return const SizedBox(height: 8);
 
-            // 1. Headers (**Title**)
+            // 1. Headers
             if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
               final text = trimmed.replaceAll('**', '');
               return Padding(

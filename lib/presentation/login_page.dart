@@ -52,13 +52,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       Map<String, dynamic> response;
 
       if (_isLogin) {
-        // --- LOGIN LOGIC ---
+        //LOGIN LOGIC
         response = await AuthApiService.login(
           _emailController.text.trim(),
           _passwordController.text.trim(),
         );
       } else {
-        // --- SIGN UP LOGIC ---
+        // SIGN UP
         response = await AuthApiService.signin(
           _nameController.text.trim(),
           _emailController.text.trim(),

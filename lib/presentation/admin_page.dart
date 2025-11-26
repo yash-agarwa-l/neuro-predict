@@ -67,7 +67,6 @@ class _AdminPageState extends State<AdminPage> {
                             const Text("No analysis history.", style: TextStyle(color: Colors.grey))
                           else
                             ...predictions.map((log) {
-                              // Simplified view of a log
                               final date = DateTime.parse(log['created_at']).toLocal().toString().split(' ')[0];
                               return ListTile(
                                 dense: true,
@@ -75,14 +74,12 @@ class _AdminPageState extends State<AdminPage> {
                                 subtitle: Text("High Risk: ${log['alzheimer_risk_score']}% (Alzheimer)"),
                                 trailing: const Icon(Icons.visibility, size: 18),
                                 onTap: () {
-                                  // Navigate to ReportPage to see full details
-                                  // Map flat DB columns back to nested structure required by ReportPage
+
                                   final nestedPredictions = {
                                     "Alzheimer": {"Risk_Score": log['alzheimer_risk_score'], "Risk_Stage": log['alzheimer_risk_stage']},
                                     "Parkinson": {"Risk_Score": log['parkinson_risk_score'], "Risk_Stage": log['parkinson_risk_stage']},
                                     "Stress": {"Risk_Score": log['stress_risk_score'], "Risk_Stage": log['stress_risk_stage']},
                                   };
-                                  // Pass dummy feature data or fetch full if needed
                                   _navigateToReport(context, log);
                                 },
                               );
